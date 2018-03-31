@@ -1,0 +1,518 @@
+  
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.css' rel='stylesheet' />
+  
+<style>
+
+/* Fixes issue on mobile */
+[class*=sqs-col] .sqs-block {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#hub-map {
+  height: 400px;
+}
+
+#hub-map .sidebar {
+  position:absolute;
+  width:33.3333%;
+  height: 373px; /*100%*/
+  top:0;left:0;
+  /*overflow:hidden;*/
+  border-right:1px solid rgba(0,0,0,0.25);
+  z-index: 9999;
+  background: #fff;
+}
+#hub-map .pad2 {
+  padding:20px;
+}
+
+#hub-map .map {
+  position:absolute;
+  width:100%;
+  top:0;bottom:0;
+}
+
+#hub-map h1 {
+  font-size:22px;
+  margin:0;
+  font-weight:400;
+  line-height: 20px;
+  padding: 20px 2px;
+}
+
+#hub-map a {
+  color:#000;
+  text-decoration:none;
+  cursor: pointer;
+}
+
+#hub-map a:hover {
+  color: #404040;
+}
+
+#hub-map .heading {
+  border-bottom:1px solid #eee;
+  min-height:60px;
+  padding:0 10px;
+  background-color: #fdde33;
+  color: #000;
+}
+
+#hub-map .listings {
+  height:100%;
+  overflow:auto;
+  /*padding-bottom:60px;*/
+  background-color: white;
+}
+
+#hub-map .listings .item {
+  display:block;
+  border-bottom:1px solid #eee;
+  padding:10px;
+  text-decoration:none;
+  font-size: 0.9em;
+}
+
+#hub-map .listings .item:last-child { border-bottom:none; }
+#hub-map .listings .item .title {
+  display:block;
+  color:#000;
+  font-weight:700;
+}
+
+#hub-map .listings .item .title small { font-weight:400; }
+#hub-map .listings .item.active .title,
+#hub-map .listings .item .title:hover { color:#9e9e9e; }
+#hub-map .listings .item.active {
+  background-color: #fdde33;
+  color: #000;
+}
+#hub-map ::-webkit-scrollbar {
+  width:3px;
+  height:3px;
+  border-left:0;
+  background:rgba(0,0,0,0.1);
+}
+#hub-map ::-webkit-scrollbar-track {
+  background:none;
+}
+#hub-map ::-webkit-scrollbar-thumb {
+  background:#000;
+  border-radius:0;
+}
+
+#hub-map .marker {
+  border: none;
+  cursor: pointer;
+  height: 56px;
+  width: 56px;
+  background-image: url(/s/map_icon.jpg);
+  background-color: rgba(0, 0, 0, 0);
+}
+
+#hub-map .clearfix { display:block; }
+#hub-map .clearfix:after {
+  content:'.';
+  display:block;
+  height:0;
+  clear:both;
+  visibility:hidden;
+}
+
+/* Marker tweaks */
+.mapboxgl-popup {
+  padding-bottom: 50px;
+}
+
+.mapboxgl-popup-close-button {
+  display:none;
+}
+.mapboxgl-popup-content {
+  font:400 15px/22px 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
+  padding:0;
+  max-width: 300px;
+}
+.mapboxgl-popup-content-wrapper {
+  padding:1%;
+}
+.mapboxgl-popup-content h3 {
+  background-color: #fdde33;
+  color: #000;
+  margin:0;
+  display:block;
+  padding:7px;
+  border-radius:3px 3px 0 0;
+  font-weight:700;
+  margin-top:-15px;
+  font-size: 1.1em;
+}
+
+.mapboxgl-popup-content h4 {
+  margin:0;
+  display:block;
+  padding: 6px;
+  font-weight: 100;
+}
+
+.mapboxgl-popup-content div {
+  padding:10px;
+}
+
+.mapboxgl-container .leaflet-marker-icon {
+  cursor:pointer;
+}
+
+.mapboxgl-popup-anchor-top > .mapboxgl-popup-content {
+  margin-top: 15px;
+}
+
+.mapboxgl-popup-anchor-top > .mapboxgl-popup-tip {
+  border-bottom-color: #fdde33;
+}
+
+#hub-map .toggle-div {
+    background: #fff;
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    right: 10px;
+}
+
+#hub-map button.toggle {
+    font-size: 13px;
+    color: #000;
+    background: #fff;
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.4);
+}
+#hub-map #show-map {
+  margin-bottom: 8px;
+}
+
+#hub-map button.toggle:hover {
+    background-color: #f8f8f8;
+    color: #404040;
+}
+
+@media (max-width: 420px) {
+  #hub-map .sidebar {
+    width: 100%;
+  }
+}
+
+@media (min-width: 420px) {
+  #hub-map button.toggle {
+    display: none;
+  }
+  #hub-map .coordinators-mobile {
+    display: none;
+  }
+}
+
+</style>
+
+
+
+<div id="hub-map">
+    <div class='sidebar'>
+      <div class='heading'>
+        <h1>Sunrise Hubs</h1>
+        <button id="show-map" class="toggle">Show Map</button>
+      </div>
+    <div id='listings' class='listings'></div>
+    </div>
+    <nav class="toggle-div">
+      <button id="show-list" class="toggle">Show List</button>
+    </nav>
+    <div id='map' class='map'> </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.41.0/mapbox-gl.js'></script>
+
+
+
+<script>
+///////////////////////////////////////////////////////////////////
+// index.js
+
+var NUM_COLS = 10;
+// Link to Google Sheet:
+// https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/edit
+
+function processData(allText) {
+    var allTextLines = allText.split(/\r\n|\n/);
+    var headers = allTextLines[0].split(',');
+    var lines = [];
+
+    for (var i=1; i<allTextLines.length; i++) {
+        var data = allTextLines[i].split(',');
+        if (data.length == headers.length) {
+            var tarr = [];
+            for (var j=0; j<headers.length; j++) {
+              tarr.push(data[j].trim());
+            }
+            lines.push(tarr);
+        }
+    }
+    return lines;
+}
+
+function makeGeoJSONFeature(coordinatorLines) {
+  var line = coordinatorLines[0];
+  var state = line[0];
+  var city = line[1];
+  var lat = parseFloat(line[2].replace(/"/, ""));
+  var lng = parseFloat(line[3].replace(/"/, ""));
+  var facebookGroupLink = line[9];
+  
+  var coordinatorsHtml = "<span style='font-size: 16px'>Hub Contact";
+  if(coordinatorLines.length > 1) { coordinatorsHtml += "s"; }
+  coordinatorsHtml += ":</span><p>";
+  for (var i=0; i < coordinatorLines.length; i++) {
+    var coordinatorLine = coordinatorLines[i];
+    var firstName = coordinatorLine[4];
+    var lastName = coordinatorLine[5];
+    var email = coordinatorLine[6];
+    var phone = coordinatorLine[7];
+    //var preferredContactMode = coordinatorLine[8];
+    
+    coordinatorsHtml += "<strong>" + firstName + " " + lastName + "</strong>: ";
+    coordinatorsHtml += email + "<br>";
+  }
+  coordinatorsHtml += "</p>";
+  
+  var feature = {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [lng,lat]
+        },
+        "properties": {
+          "address": city + ", " + state,
+          "coordinators": coordinatorsHtml,
+          "facebookGroupLink": facebookGroupLink
+        }
+      }
+  return feature;
+}
+
+function showMapMobile() {
+  $(".sidebar").css({"z-index": "0"});
+}
+function showListMobile() {
+  $(".sidebar").css({"z-index": "9999"});
+}
+
+$(document).ready(function() {
+    $("#show-map").click(function(){
+      showMapMobile();
+    });
+    
+    $("#show-list").click(function(){
+      showListMobile();
+    });
+  
+    $.ajax({
+        type: "GET",
+        url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
+        dataType: "text",
+        success: function(data) {
+          var lines = processData(data);
+          
+          var features = [];
+          var prevCity = "";
+          var curCoordinators = [];
+          for (var i=0; i < lines.length; i++) {
+            var line = lines[i];
+            var city = line[1];
+            
+            //if(line.length === NUM_COLS) {
+            
+            if(prevCity !== city && curCoordinators.length > 0) {
+              features.push(makeGeoJSONFeature(curCoordinators));
+              curCoordinators = [];
+            }
+            curCoordinators.push(line);
+            prevCity = city;
+          }
+          features.push(makeGeoJSONFeature(curCoordinators));
+          
+          var hubs = {
+            "type": "FeatureCollection",
+            "features": features
+          };
+          initMap(hubs);
+        }
+     });
+    
+});
+
+
+
+
+///////////////////////////////////////////////
+// map.js
+
+function initMap(hubs) {
+  
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZXhhbXBsZXMiLCJhIjoiY2lqbmpqazdlMDBsdnRva284cWd3bm11byJ9.V6Hg2oYJwMAxeoR9GEzkAA';
+  
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-112.030293, 39.585733],
+    zoom: 2.5
+    //scrollZoom: false
+  });
+  // Add zoom and rotation controls to the map.
+  map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+  
+  
+  map.on('load', function (e) {
+    map.addSource("places", {
+      "type": "geojson",
+      "data": hubs
+    });
+    
+    buildLocationList(hubs);
+
+    // If mobile show map intially
+    if($(window).width() < 420) {
+      showMapMobile();
+      map.setZoom(1.5);
+      map.setCenter([-97.862265, 38.705787]);
+
+      $("#hub-map .sidebar").css({height: "314px"});
+    }
+  });
+
+  // This is where your interactions with the symbol layer used to be
+  // Now you have interactions with DOM markers instead
+  hubs.features.forEach(function(marker, i) {
+    // Create an img element for the marker
+    var el = document.createElement('div');
+    el.id = "marker-" + i;
+    el.className = 'marker';
+    // Add markers to the map at all points
+    new mapboxgl.Marker(el, {offset: [0, -23]})
+        .setLngLat(marker.geometry.coordinates)
+        .addTo(map);
+
+    el.addEventListener('click', function(e){
+        // 1. Fly to the point
+        flyToStore(marker);
+
+        // 2. Close all other popups and display popup for clicked store
+        createPopUp(marker);
+
+        // 3. Highlight listing in sidebar (and remove highlight for all other listings)
+        var activeItem = document.getElementsByClassName('active');
+
+        e.stopPropagation();
+        if (activeItem[0]) {
+           activeItem[0].classList.remove('active');
+        }
+
+        var listing = document.getElementById('listing-' + i);
+        listing.classList.add('active');
+
+    });
+  });
+
+
+  function flyToStore(currentFeature) {
+    map.flyTo({
+        center: currentFeature.geometry.coordinates
+      });
+  }
+
+  function createPopUp(currentFeature) {
+    var popUps = document.getElementsByClassName('mapboxgl-popup');
+    if (popUps[0]) popUps[0].remove();
+
+    var popupHtml = "<h3>" + currentFeature.properties.address + "</h3><h4>";
+
+    if(currentFeature.properties.facebookGroupLink) {
+      popupHtml += '<p><a href="'+ currentFeature.properties.facebookGroupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
+    }
+
+    popupHtml += currentFeature.properties.coordinators + '</h4>';
+
+    var popup = new mapboxgl.Popup({
+        closeOnClick: true, 
+        anchor: "left"
+      })
+      .setLngLat(currentFeature.geometry.coordinates)
+      .setHTML(popupHtml)
+      .addTo(map);
+  }
+
+
+  function buildLocationList(data) {
+    for (i = 0; i < data.features.length; i++) {
+      var currentFeature = data.features[i];
+      var prop = currentFeature.properties;
+
+      var listings = document.getElementById('listings');
+      var listing = listings.appendChild(document.createElement('div'));
+      listing.className = 'item';
+      listing.id = "listing-" + i;
+
+      var link = listing.appendChild(document.createElement('a'));
+      //link.href = '#';
+      link.className = 'title';
+      link.dataPosition = i;
+      link.innerHTML = prop.address;
+      
+      var coordinatorsDivMobile = listing.appendChild(document.createElement('div'));
+      coordinatorsDivMobile.className = 'coordinators-mobile';
+
+      var hubListItemHtml = "";
+      if(prop.facebookGroupLink) {
+        hubListItemHtml += '<p><a href="'+ prop.facebookGroupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
+      }
+      hubListItemHtml += prop.coordinators;
+
+      coordinatorsDivMobile.innerHTML = hubListItemHtml;
+      
+
+      var details = listing.appendChild(document.createElement('div'));
+      //details.innerHTML = prop.coordinators;
+      /*if (prop.phone) {
+        details.innerHTML += ' &middot; ' + prop.phoneFormatted;
+      }*/
+
+
+
+      link.addEventListener('click', function(e){
+        // Update the currentFeature to the store associated with the clicked link
+        var clickedListing = data.features[this.dataPosition];
+
+        // 1. Fly to the point
+        flyToStore(clickedListing);
+
+        // 2. Close all other popups and display popup for clicked store
+        createPopUp(clickedListing);
+
+        // 3. Highlight listing in sidebar (and remove highlight for all other listings)
+        var activeItem = document.getElementsByClassName('active');
+
+        if (activeItem[0]) {
+           activeItem[0].classList.remove('active');
+        }
+        this.parentNode.classList.add('active');
+
+      });
+    }
+  }
+  
+}
+
+
+  
+</script>
