@@ -269,6 +269,7 @@ function makeGeoJSONFeature(coordinatorLines) {
   var lat = parseFloat(line[2].replace(/"/, ""));
   var lng = parseFloat(line[3].replace(/"/, ""));
   var facebookGroupLink = line[9];
+  var websiteEmail = line[10];
   
   var coordinatorsHtml = "<span style='font-size: 16px'>Hub Contact";
   if(coordinatorLines.length > 1) { coordinatorsHtml += "s"; }
@@ -286,6 +287,11 @@ function makeGeoJSONFeature(coordinatorLines) {
   }
   coordinatorsHtml += "</p>";
   
+  // If a website email exists, only show that and not individual coordinators
+  if(websiteEmail) {
+    coordinatorsHtml = "<strong>Hub Contact Email:</strong><br>" + websiteEmail;
+  }
+
   var feature = {
         "type": "Feature",
         "geometry": {
@@ -330,8 +336,6 @@ $(document).ready(function() {
           for (var i=0; i < lines.length; i++) {
             var line = lines[i];
             var city = line[1];
-            
-            //if(line.length === NUM_COLS) {
             
             if(prevCity !== city && curCoordinators.length > 0) {
               features.push(makeGeoJSONFeature(curCoordinators));
