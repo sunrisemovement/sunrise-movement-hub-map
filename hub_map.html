@@ -60,6 +60,12 @@
   color: #000;
 }
 
+#hub-map input.search {
+  width: 100%;
+  font-size: 0.9em;
+  padding: 10px;
+}
+
 #hub-map .listings {
   height:100%;
   overflow:auto;
@@ -224,7 +230,10 @@
         <h1>Sunrise Hubs</h1>
         <button id="show-map" class="toggle">Show Map</button>
       </div>
-    <div id='listings' class='listings'></div>
+      <div id='hub-list'>
+        <input class='search' placeholder='Filter list...'>
+        <div id='listings' class='listings'></div>
+      </div>
     </div>
     <nav class="toggle-div">
       <button id="show-list" class="toggle">Show List</button>
@@ -234,7 +243,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
 
 
 <script>
@@ -323,7 +332,7 @@ $(document).ready(function() {
     $("#show-list").click(function(){
       showListMobile();
     });
-  
+
     $.ajax({
         type: "GET",
         url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
@@ -385,6 +394,11 @@ function initMap(hubs) {
     });
     
     buildLocationList(hubs);
+
+    var hubList = new List('hub-list', {
+      listClass: 'listings',
+      valueNames: ['title']
+    });
 
     // If mobile show map intially
     if($(window).width() < 420) {
