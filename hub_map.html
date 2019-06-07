@@ -278,6 +278,10 @@ if (typeof(String.prototype.trim) === "undefined") {
   };
 }
 
+function emailLink(email) {
+  return "<a href='mailto:" + email + "'>" + email + "</a>";
+}
+
 function makeGeoJSONFeature(coordinatorLines) {
   var line = coordinatorLines[0];
   var state = line[0];
@@ -299,13 +303,13 @@ function makeGeoJSONFeature(coordinatorLines) {
     //var preferredContactMode = coordinatorLine[8];
     
     coordinatorsHtml += "<strong>" + firstName + " " + lastName + "</strong>: ";
-    coordinatorsHtml += email + "<br>";
+    coordinatorsHtml += emailLink(email) + "<br>";
   }
   coordinatorsHtml += "</p>";
   
   // If a website email exists, only show that and not individual coordinators
   if(websiteEmail) {
-    coordinatorsHtml = "<strong>Hub Contact Email:</strong><br>" + websiteEmail;
+    coordinatorsHtml = "<strong>Hub Contact Email:</strong><br>" + emailLink(websiteEmail);
   }
 
   var feature = {
