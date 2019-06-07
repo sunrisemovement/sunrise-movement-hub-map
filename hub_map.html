@@ -272,6 +272,12 @@ function processData(allText) {
     return lines;
 }
 
+if (typeof(String.prototype.trim) === "undefined") {
+  String.prototype.trim = function() {
+    return String(this).replace(/^\s+|\s+$/g, '');
+  };
+}
+
 function makeGeoJSONFeature(coordinatorLines) {
   var line = coordinatorLines[0];
   var state = line[0];
@@ -450,6 +456,17 @@ function initMap(hubs) {
       });
   }
 
+  function groupLinkHtml(groupLink) {
+    // TODO: rename spreadsheet column in original CSV to account for non-facebook links
+    if (/facebook\.com/i.test(groupLink)) { // Facebook
+      return '<p><a href="'+ groupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
+    } else if (groupLink.trim().startsWith("@")) { // Twitter
+      return '<p><a href="https://twitter.com/'+ groupLink.trim().slice(1) + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
+    } else { // Other website
+      return '<p><a href="'+ groupLink + '" target="_blank" style="text-decoration:underline;">Hub Website</a></p>';
+    }
+  }
+
   function createPopUp(currentFeature) {
     var popUps = document.getElementsByClassName('mapboxgl-popup');
     if (popUps[0]) popUps[0].remove();
@@ -457,7 +474,7 @@ function initMap(hubs) {
     var popupHtml = "<h3>" + currentFeature.properties.address + "</h3><h4>";
 
     if(currentFeature.properties.facebookGroupLink) {
-      popupHtml += '<p><a href="'+ currentFeature.properties.facebookGroupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
+      popupHtml += groupLinkHtml(currentFeature.properties.facebookGroupLink);
     }
 
     popupHtml += currentFeature.properties.coordinators + '</h4>';
@@ -493,7 +510,7 @@ function initMap(hubs) {
 
       var hubListItemHtml = "";
       if(prop.facebookGroupLink) {
-        hubListItemHtml += '<p><a href="'+ prop.facebookGroupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
+        hubListItemHtml += groupLinkHtml(prop.facebookGroupLink);
       }
       hubListItemHtml += prop.coordinators;
 
