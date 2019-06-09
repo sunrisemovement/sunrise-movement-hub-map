@@ -227,6 +227,14 @@
   #hub-map .sidebar {
     width: 100%;
   }
+
+  #hub-map h1 {
+    display: none;
+  }
+
+  #hub-map .heading {
+    padding-top: 10px;
+  }
 }
 
 @media (min-width: 420px) {
@@ -433,7 +441,7 @@ function initMap(hubs) {
       map.setZoom(1.5);
       map.setCenter([-97.862265, 38.705787]);
 
-      $("#hub-map .sidebar").css({height: "314px"});
+      $("#hub-map .sidebar").css({height: "320px"});
     }
   });
 
