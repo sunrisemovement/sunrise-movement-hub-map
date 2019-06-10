@@ -372,6 +372,8 @@ $(document).ready(function() {
       showListMobile();
     });
 
+    $('#hub-map').closest('.code-block').css('max-width', 'calc(100% - 1em)');
+
     $.ajax({
         type: "GET",
         url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
