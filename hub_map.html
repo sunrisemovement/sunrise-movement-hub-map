@@ -38,12 +38,13 @@
   top:0;bottom:0;
 }
 
-#hub-map h1 {
+#hub-map h2 {
   font-size:22px;
   margin:0;
   font-weight:400;
   line-height: 20px;
   padding: 20px 2px;
+  color:#222;
 }
 
 #hub-map a {
@@ -227,13 +228,15 @@
     color: #404040;
 }
 
+@media (max-width: 768px) {
+  #hub-map h2 {
+    display: none;
+  }
+}
+
 @media (max-width: 420px) {
   #hub-map .sidebar {
     width: 100%;
-  }
-
-  #hub-map h1 {
-    display: none;
   }
 
   #hub-map .heading {
@@ -257,7 +260,7 @@
 <div id="hub-map">
     <div class='sidebar' id='hub-list-sidebar'>
       <div class='heading'>
-        <h1>Sunrise Hubs</h1>
+        <h2>Sunrise Hubs</h2>
         <button id="show-map" class="toggle">Show Map</button>
       </div>
       <input class='search' type='search' placeholder='Search for a hub...'>
