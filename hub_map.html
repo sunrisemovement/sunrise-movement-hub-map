@@ -469,16 +469,13 @@ function initMap(hubs) {
         createPopUp(marker);
 
         // 3. Highlight listing in sidebar (and remove highlight for all other listings)
-        var activeItem = document.getElementsByClassName('active');
-
         e.stopPropagation();
-        if (activeItem[0]) {
-           activeItem[0].classList.remove('active');
+        $('#hub-map .active').removeClass('active');
+        var link = $('#listing-'+ i);
+        if (link.length) {
+          link.addClass('active');
+          link[0].scrollIntoView({ block: 'nearest', inline: 'start' });
         }
-
-        var listing = document.getElementById('listing-' + i);
-        listing.classList.add('active');
-
     });
   });
 
@@ -516,6 +513,7 @@ function initMap(hubs) {
         closeOnClick: true, 
         anchor: "left"
       })
+      .on('close', function() { $('#hub-map .item').removeClass('active'); })
       .setLngLat(currentFeature.geometry.coordinates)
       .setHTML(popupHtml)
       .addTo(map);
@@ -569,13 +567,8 @@ function initMap(hubs) {
         createPopUp(clickedListing);
 
         // 3. Highlight listing in sidebar (and remove highlight for all other listings)
-        var activeItem = document.getElementsByClassName('active');
-
-        if (activeItem[0]) {
-           activeItem[0].classList.remove('active');
-        }
-        this.parentNode.classList.add('active');
-
+        $('#hub-map .active').removeClass('active');
+        $(this.parentNode).addClass('active');
       });
     }
   }
