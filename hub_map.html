@@ -383,8 +383,7 @@ $(document).ready(function() {
 
     $.ajax({
         type: "GET",
-        url: "https://docs.google.com/spreadsheets/d/1v3Q72p9HvE966bak37E_h1qLpRtF_i935zzGrON3VpI/export?exportFormat=csv",
-        //url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
+        url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
         dataType: "text",
         success: function(data) {
           var lines = processData(data);
