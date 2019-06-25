@@ -324,6 +324,7 @@ function makeGeoJSONFeature(coordinatorLines) {
   var websiteEmail = line[10].trim();
   var websiteLink = line[11].trim();
   var twitterLink = line[12].trim();
+  var instagramLink = line[13].trim();
 
   var coordinatorsHtml = "<span style='font-size: 16px'>Hub Contact";
   if(coordinatorLines.length > 1) { coordinatorsHtml += "s"; }
@@ -357,7 +358,8 @@ function makeGeoJSONFeature(coordinatorLines) {
           "coordinators": coordinatorsHtml,
           "facebookGroupLink": facebookGroupLink,
           "twitterLink": twitterLink,
-          "websiteLink": websiteLink
+          "websiteLink": websiteLink,
+          "instagramLink": instagramLink
         }
       }
   return feature;
@@ -500,6 +502,7 @@ function initMap(hubs) {
     var fbLink = properties.facebookGroupLink;
     var twLink = properties.twitterLink;
     var wsLink = properties.websiteLink;
+    var igLink = properties.instagramLink;
     if (fbLink) {
       html += '<p><a href="'+ fbLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
     }
@@ -508,6 +511,13 @@ function initMap(hubs) {
         html += '<p><a href="https://twitter.com/'+ twLink.slice(1) + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
       } else {
         html += '<p><a href="'+ twLink + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
+      }
+    }
+    if (igLink) {
+      if (igLink.startsWith("@")) {
+        html += '<p><a href="https://www.instagram.com/'+ igLink.slice(1) + '" target="_blank" style="text-decoration:underline;">Instagram Page</a></p>';
+      } else {
+        html += '<p><a href="'+ igLink + '" target="_blank" style="text-decoration:underline;">Instagram Page</a></p>';
       }
     }
     if (wsLink) {
