@@ -316,22 +316,25 @@ function emailLink(email) {
 
 function makeGeoJSONFeature(coordinatorLines) {
   var line = coordinatorLines[0];
-  var state = line[0];
-  var city = line[1];
+  var state = line[0].trim();
+  var city = line[1].trim();
   var lat = parseFloat(line[2].replace(/"/, ""));
   var lng = parseFloat(line[3].replace(/"/, ""));
-  var facebookGroupLink = line[9];
-  var websiteEmail = line[10];
-  
+  var facebookGroupLink = line[9].trim();
+  var websiteEmail = line[10].trim();
+  var websiteLink = line[11].trim();
+  var twitterLink = line[12].trim();
+  var instagramLink = line[13].trim();
+
   var coordinatorsHtml = "<span style='font-size: 16px'>Hub Contact";
   if(coordinatorLines.length > 1) { coordinatorsHtml += "s"; }
   coordinatorsHtml += ":</span><p>";
   for (var i=0; i < coordinatorLines.length; i++) {
     var coordinatorLine = coordinatorLines[i];
-    var firstName = coordinatorLine[4];
-    var lastName = coordinatorLine[5];
-    var email = coordinatorLine[6];
-    var phone = coordinatorLine[7];
+    var firstName = coordinatorLine[4].trim();
+    var lastName = coordinatorLine[5].trim();
+    var email = coordinatorLine[6].trim();
+    var phone = coordinatorLine[7].trim();
     //var preferredContactMode = coordinatorLine[8];
     
     coordinatorsHtml += "<strong>" + firstName + " " + lastName + "</strong>: ";
@@ -353,7 +356,10 @@ function makeGeoJSONFeature(coordinatorLines) {
         "properties": {
           "address": city + ", " + state,
           "coordinators": coordinatorsHtml,
-          "facebookGroupLink": facebookGroupLink
+          "facebookGroupLink": facebookGroupLink,
+          "twitterLink": twitterLink,
+          "websiteLink": websiteLink,
+          "instagramLink": instagramLink
         }
       }
   return feature;
@@ -491,15 +497,33 @@ function initMap(hubs) {
       });
   }
 
-  function groupLinkHtml(groupLink) {
-    // TODO: rename spreadsheet column in original CSV to account for non-facebook links
-    if (/facebook\.com/i.test(groupLink)) { // Facebook
-      return '<p><a href="'+ groupLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
-    } else if (groupLink.trim().startsWith("@")) { // Twitter
-      return '<p><a href="https://twitter.com/'+ groupLink.trim().slice(1) + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
-    } else { // Other website
-      return '<p><a href="'+ groupLink + '" target="_blank" style="text-decoration:underline;">Hub Website</a></p>';
+  function groupLinkHtml(properties) {
+    var html = '';
+    var fbLink = properties.facebookGroupLink;
+    var twLink = properties.twitterLink;
+    var wsLink = properties.websiteLink;
+    var igLink = properties.instagramLink;
+    if (fbLink) {
+      html += '<p><a href="'+ fbLink + '" target="_blank" style="text-decoration:underline;">Facebook Page</a></p>';
     }
+    if (twLink) {
+      if (twLink.startsWith("@")) {
+        html += '<p><a href="https://twitter.com/'+ twLink.slice(1) + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
+      } else {
+        html += '<p><a href="'+ twLink + '" target="_blank" style="text-decoration:underline;">Twitter Page</a></p>';
+      }
+    }
+    if (igLink) {
+      if (igLink.startsWith("@")) {
+        html += '<p><a href="https://www.instagram.com/'+ igLink.slice(1) + '" target="_blank" style="text-decoration:underline;">Instagram Page</a></p>';
+      } else {
+        html += '<p><a href="'+ igLink + '" target="_blank" style="text-decoration:underline;">Instagram Page</a></p>';
+      }
+    }
+    if (wsLink) {
+      html += '<p><a href="'+ wsLink + '" target="_blank" style="text-decoration:underline;">Hub Website</a></p>';
+    }
+    return html;
   }
 
   function createPopUp(currentFeature) {
@@ -508,9 +532,7 @@ function initMap(hubs) {
 
     var popupHtml = "<h3>" + currentFeature.properties.address + "</h3><h4>";
 
-    if(currentFeature.properties.facebookGroupLink) {
-      popupHtml += groupLinkHtml(currentFeature.properties.facebookGroupLink);
-    }
+    popupHtml += groupLinkHtml(currentFeature.properties);
 
     popupHtml += currentFeature.properties.coordinators + '</h4>';
 
@@ -545,9 +567,7 @@ function initMap(hubs) {
       coordinatorsDivMobile.className = 'coordinators-mobile';
 
       var hubListItemHtml = "";
-      if(prop.facebookGroupLink) {
-        hubListItemHtml += groupLinkHtml(prop.facebookGroupLink);
-      }
+      hubListItemHtml += groupLinkHtml(prop);
       hubListItemHtml += prop.coordinators;
 
       coordinatorsDivMobile.innerHTML = hubListItemHtml;
