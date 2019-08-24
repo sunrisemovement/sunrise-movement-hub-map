@@ -282,10 +282,6 @@
 ///////////////////////////////////////////////////////////////////
 // index.js
 
-var NUM_COLS = 10;
-// Link to Google Sheet:
-// https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/edit
-
 function processData(allText) {
     var allTextLines = allText.split(/\r\n|\n/);
     var headers = allTextLines[0].split(',');
@@ -385,7 +381,7 @@ $(document).ready(function() {
 
     $.ajax({
         type: "GET",
-        url: "https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/export?exportFormat=csv",
+        url: "https://docs.google.com/spreadsheets/d/1lMgW93xQpWR-louxw7Vm0QY0j5WiNJ_nHMNtn2QsvcQ/export?exportFormat=csv",
         dataType: "text",
         success: function(data) {
           var lines = processData(data);
