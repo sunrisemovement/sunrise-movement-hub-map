@@ -1,5 +1,6 @@
 # sunrise-movement-hub-map
-Code for the map on this page: https://www.sunrisemovement.org/hubs/
+~~Code for the map on this page: https://www.sunrisemovement.org/hubs/~~
+Note: this has been replaced by https://github.com/sunrisemovement/hubhub!
 
 ## Spreadsheet powering the map:
 https://docs.google.com/spreadsheets/d/1ZX3bzLhbnq1MICD_siWDw2hxeP0SGXGoHyuXpzp-rzA/edit#gid=0
