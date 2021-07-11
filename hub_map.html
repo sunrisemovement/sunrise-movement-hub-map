@@ -540,6 +540,10 @@ function initMap(hubs) {
       .setLngLat(currentFeature.geometry.coordinates)
       .setHTML(popupHtml)
       .addTo(map);
+
+    if (window.ga) {
+      ga('send', 'event', 'hubmap', 'hubview', currentFeature.properties.address);
+    }
   }
 
 
